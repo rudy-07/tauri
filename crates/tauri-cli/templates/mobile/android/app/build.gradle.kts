@@ -27,6 +27,19 @@ android {
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
     }
+    System.getenv("NDK_HOME")?.let { ndkHome ->
+        val propFile = file(ndkHome).resolve("source.properties")
+        if (propFile.exists()) {
+            val ndkProperties = Properties().apply {
+                propFile.inputStream().use { load(it) }
+            }
+            val revision = ndkProperties.getProperty("Pkg.Revision")
+            if (revision != null) {
+                ndkPath = ndkHome
+                ndkVersion = revision
+            }
+        }
+    }
     buildTypes {
         getByName("debug") {
             {{#if android-debug-application-id-suffix}}
